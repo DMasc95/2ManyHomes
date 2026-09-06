@@ -218,7 +218,7 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
                 onClick = {
 
                     //ARRANJAR ISTO
-                    //produtoViewModel.inserir()
+                    produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = , casa= , tipo = ))
 
 
                     navController.popBackStack()   // volta para o ecrã anterior, volta para o ecrã anterior, ecra da lista de produtos
