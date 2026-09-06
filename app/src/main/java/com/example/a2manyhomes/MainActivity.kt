@@ -123,7 +123,7 @@ class MainActivity : ComponentActivity() {
                             InserirCasaScreen(homeViewModel,navController)
                         }
                         composable("adicionar_produto") {
-                            AdicionarProdutoScreen(navController)
+                            AdicionarProdutoScreen(navController,produtoviewModel)
                         }
                     }
                 }
@@ -192,7 +192,7 @@ fun InserirCasaScreen(homeViewModel: HomeViewModel,navController: NavController)
 }
 
 @Composable
-fun AdicionarProdutoScreen(navController: NavController) { //ecra de adicionar um produto novo
+fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: ProdutoViewModel) { //ecra de adicionar um produto novo
     var nomeProduto by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -218,7 +218,7 @@ fun AdicionarProdutoScreen(navController: NavController) { //ecra de adicionar u
                 onClick = {
 
                     //ARRANJAR ISTO
-                    //homeViewModel.inserir(Home(localizacao = nomeCasa))
+                    //produtoViewModel.inserir()
 
 
                     navController.popBackStack()   // volta para o ecrã anterior, volta para o ecrã anterior, ecra da lista de produtos
