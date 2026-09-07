@@ -1,6 +1,7 @@
 package com.example.a2manyhomes
 
 import android.os.Bundle
+import android.service.autofill.OnClickAction
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -130,14 +131,30 @@ class MainActivity : ComponentActivity() {
                             InserirCasaScreen(homeViewModel,navController)
                         }
                         composable(
-                                route ="adicionar_produto/{idcasa}",
-                                arguments = listOf(navArgument("idcasa") { type = NavType.IntType })
+                            route ="adicionar_produto/{idcasa}",
+                            arguments = listOf(navArgument("idcasa") { type = NavType.IntType })
                         ) { backStackEntry ->
                             val idcasa = backStackEntry.arguments?.getInt("idcasa") ?: 0
                             AdicionarProdutoScreen(navController,produtoviewModel,idcasa)
                         }
-                        composable("filtro"){
-                            FiltroScreen(navController)
+                        composable(
+                            route = "filtro/{idcasa}",
+                            arguments = listOf(navArgument("idcasa") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val idcasa = backStackEntry.arguments?.getInt("idcasa") ?: 0
+                            FiltroScreen(navController,idcasa)
+                        }
+                        composable(
+                            route = "produtos_filtrados/{idCasa}/{tipoProduto}",
+                            arguments = listOf(
+                                navArgument("idCasa") { type = NavType.IntType },
+                                navArgument("tipoProduto") {type = NavType.StringType}
+                            )
+                        ) { backStackEntry ->
+                            val idCasa = backStackEntry.arguments?.getInt("idCasa") ?: 0
+                            val tipoStr = backStackEntry.arguments?.getString("tipo") ?: TipoProduto.OUTRO.name
+                            val tipo = TipoProduto.valueOf(tipoStr)
+                            ProdutosFiltradosScreen(navController,idCasa,tipo)
                         }
                     }
                 }
@@ -312,7 +329,7 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
             Button(
                 onClick = {
                     //funcao que abre um novo screen de filtro
-                    navController.navigate("filtro")
+                    navController.navigate("filtro/${idCasa}")
                 },
                 modifier = Modifier.padding(16.dp)
             ) {
@@ -371,6 +388,13 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
     }
 }
 
+@Composable
+fun ProdutosFiltradosScreen(navController: NavController, idcasa: Int, tipoProduto: TipoProduto) {
+
+}
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropdownTipoProduto(
@@ -414,12 +438,7 @@ fun DropdownTipoProduto(
 
 
 @Composable
-fun FiltroScreen(navController: NavController,) {
-    //possivelmente vou ter de fazer algo assim para ter os filtros
-    //val filtros by produtoViewModel.getProdutosPorCasa(idCasa).collectAsState(initial = emptyList())
-    //possivelmente vou ter que criar ficheiros DAO novos, para criar funcoes para ir buscar os filtros
-
-
+fun FiltroScreen(navController: NavController,idCasa: Int) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -435,19 +454,20 @@ fun FiltroScreen(navController: NavController,) {
             )
         }
     }
-
     //adicionar filtros
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 100.dp, bottom = 100.dp)
+            .padding(top = 50.dp, bottom = 100.dp)
     ) {
         items(TipoProduto.entries) { tipo ->
-            CardFiltro(tipo)
+            CardFiltro(
+                tipo,
+                navController,
+                idCasa
+            )
         }
     }
-
     //caixa para ter o botao de recuar e aplicar filtros
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -484,6 +504,9 @@ fun FiltroScreen(navController: NavController,) {
         }
     }
 }
+
+
+
 
 
 @Composable
@@ -636,15 +659,14 @@ fun CardProduto(produto: Produto) {
 }
 
 @Composable
-fun CardFiltro(tipoProduto: TipoProduto) {
+fun CardFiltro(tipoProduto: TipoProduto, navController: NavController, idCasa: Int) {
     Card(
         modifier = Modifier
             .fillMaxSize()
             .padding(12.dp)
             .clickable() {
-
                 //ao carregar, selecionamos o filtro e mandamos para tras
-
+                navController.navigate("produtos_filtrados/${idCasa}/${tipoProduto}")
             }
         ) {
         Row() {
@@ -753,6 +775,8 @@ fun CardFiltro(tipoProduto: TipoProduto) {
 
 
 //TO DO
+
+//falta completar os produtos_filtrados, nao sei como obter duas coisas em simultaneo
 
 //personalizar o cartao para colocar o + e o - para aumentar ou diminuir a quantidade de um produto
 //possibilidade de filtro
