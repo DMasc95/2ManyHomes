@@ -8,4 +8,6 @@ class ProdutoRepository(private val dao: ProdutoDAO) {
     suspend fun inserir(produto: Produto) = dao.inserir(produto)
     suspend fun atualizar(produto: Produto) = dao.atualizar(produto)
     suspend fun apagar(produto: Produto) = dao.apagar(produto)
+
+    fun getProdutosPorCasaETipo(casa: Int, tipo: TipoProduto): Flow<List<Produto>> = dao.getProdutosPorCasaETipo(casa,tipo)
 }

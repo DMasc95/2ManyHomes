@@ -23,4 +23,7 @@ interface ProdutoDAO {
 
     @Query("SELECT * FROM produtos")
     fun getTodos(): Flow<List<Produto>>
+
+    @Query("SELECT * FROM produtos WHERE casa = :casa AND tipo = :tipo")
+    fun getProdutosPorCasaETipo(casa: Int, tipo: TipoProduto): Flow<List<Produto>>
 }

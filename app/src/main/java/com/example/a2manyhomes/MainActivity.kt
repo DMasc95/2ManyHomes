@@ -152,9 +152,9 @@ class MainActivity : ComponentActivity() {
                             )
                         ) { backStackEntry ->
                             val idCasa = backStackEntry.arguments?.getInt("idCasa") ?: 0
-                            val tipoStr = backStackEntry.arguments?.getString("tipo") ?: TipoProduto.OUTRO.name
+                            val tipoStr = backStackEntry.arguments?.getString("tipoProduto") ?: TipoProduto.OUTRO.name
                             val tipo = TipoProduto.valueOf(tipoStr)
-                            ProdutosFiltradosScreen(navController,idCasa,tipo)
+                            ProdutosFiltradosScreen(navController,idCasa,tipo,produtoviewModel,homeViewModel)
                         }
                     }
                 }
@@ -389,10 +389,63 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
 }
 
 @Composable
-fun ProdutosFiltradosScreen(navController: NavController, idcasa: Int, tipoProduto: TipoProduto) {
+fun ProdutosFiltradosScreen(navController: NavController, idcasa: Int, tipoProduto: TipoProduto, produtoViewModel: ProdutoViewModel, homeViewModel: HomeViewModel) {
 
     //o titulo pode ser algo como "Produto filtrado - Oeiras"
     //basicamente "produto selecionado - casa selecionada", e depois aparece a lista toda de produtos
+
+    val produtos by remember(idcasa, tipoProduto) { produtoViewModel.getProdutosPorCasaETipo(idcasa, tipoProduto) }.collectAsState(initial = emptyList())
+    val casa by remember(idcasa) { homeViewModel.getHomeporId(idcasa) }.collectAsState(initial = null)
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        //caixa do nome da localizacao em cima
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Text(
+                text = "${tipoProduto.name} — ${casa?.localizacao ?:"A carregar..."}",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+
+        //lista para dar scroll dos produtos
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 50.dp, bottom = 100.dp)
+        ) {
+            items(produtos) { produto ->
+                CardProduto(produto)
+            }
+        }
+
+        //caixa para ter o botao de recuar e adicionar produto
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                //botao para recuar
+                Button(
+                    onClick = {
+                        navController.popBackStack()   // volta para o ecrã anterior ("home")
+                    },
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Recuar"
+                    )
+                }
+            }
+        }
+    }
 
 
 }
@@ -490,19 +543,6 @@ fun FiltroScreen(navController: NavController,idCasa: Int) {
             ) {
                 Text(
                     text = "Recuar"
-                )
-            }
-            //botao do adicionar produto
-            Button(
-                onClick = {
-                    //funcao que aplica os filtros no screen da lista de produtos
-                    //navController.navigate("adicionar_produto/${idCasa}")
-                },
-                modifier = Modifier.padding(16.dp)
-
-            ) {
-                Text(
-                    text = "Aplicar filtros"
                 )
             }
         }
@@ -670,7 +710,7 @@ fun CardFiltro(tipoProduto: TipoProduto, navController: NavController, idCasa: I
             .padding(12.dp)
             .clickable() {
                 //ao carregar, selecionamos o filtro e mandamos para tras
-                navController.navigate("produtos_filtrados/${idCasa}/${tipoProduto}")
+                navController.navigate("produtos_filtrados/${idCasa}/${tipoProduto.name}")
             }
         ) {
         Row() {
@@ -780,10 +820,10 @@ fun CardFiltro(tipoProduto: TipoProduto, navController: NavController, idCasa: I
 
 //TO DO
 
-//fazer a pagina dos produtos filtrados
-//o titulo pode ser algo como "Produto filtrado - Oeiras"
-//personalizar o cartao para colocar o + e o - para aumentar ou diminuir a quantidade de um produto
 
+//personalizar o cartao para, ao carregar, colocar o + e o - para aumentar ou diminuir a quantidade de um produto
+//perguntar ao claude se, para fazer isso, tera de ser desta maneira: tenho de criar uma funcao extra do genero "Card expandido"
+//e se onclick, e chamada essa funcao? ou ha outra maneira de expandir na mesma pagina sem alternar?
 
 //barra de procura?
 
