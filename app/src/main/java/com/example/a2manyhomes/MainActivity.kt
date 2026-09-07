@@ -824,8 +824,11 @@ fun CardFiltro(tipoProduto: TipoProduto, navController: NavController, idCasa: I
 //personalizar o cartao para, ao carregar, colocar o + e o - para aumentar ou diminuir a quantidade de um produto
 //perguntar ao claude se, para fazer isso, tera de ser desta maneira: tenho de criar uma funcao extra do genero "Card expandido"
 //e se onclick, e chamada essa funcao? ou ha outra maneira de expandir na mesma pagina sem alternar?
+//lista de compras
+
 
 //barra de procura?
+
 
 
 //adicionar algo para eliminar a casa caso queira
