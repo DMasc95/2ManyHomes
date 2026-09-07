@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedTextField
@@ -33,27 +34,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
-import androidx.navigation.compose.rememberNavController
-import com.example.a2manyhomes.ui.theme._2ManyHomesTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.a2manyhomes.ui.theme._2ManyHomesTheme
 import data.AppDatabase
 import data.Home
 import data.HomeRepository
-import data.ProdutoRepository
-import viewmodel.ProdutoViewModel
-import viewmodel.ProdutoViewModelFactory
 import data.Produto
+import data.ProdutoRepository
 import viewmodel.HomeViewModel
 import viewmodel.HomeViewModelFactory
-import kotlin.collections.emptyList
+import viewmodel.ProdutoViewModel
+import viewmodel.ProdutoViewModelFactory
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -137,8 +138,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AddNovaCasa(modifier: Modifier = Modifier,navController: NavController) {
-    Card(modifier.size(56.dp)
-        .clickable(){
+    Card(modifier
+        .size(56.dp)
+        .clickable() {
             navController.navigate("inserir_casa")
         }) {
         Box( //este box e acrescentado para controlar como fica posicionado o texto dentro do card
@@ -194,6 +196,7 @@ fun InserirCasaScreen(homeViewModel: HomeViewModel,navController: NavController)
 @Composable
 fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: ProdutoViewModel) { //ecra de adicionar um produto novo
     var nomeProduto by remember { mutableStateOf("") }
+    var quantidadeProduto by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.padding(16.dp)) {
         OutlinedTextField(
@@ -201,7 +204,6 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
             onValueChange = { nomeProduto = it },
             label = { Text("Nome do Produto") },
             modifier = Modifier.fillMaxWidth()
-
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -218,7 +220,8 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
                 onClick = {
 
                     //ARRANJAR ISTO
-                    produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = , casa= , tipo = ))
+                    //val quantidade = quantidadeProduto.toDoubleOrNull() ?: 0.0 //isto tem de ter para tornar o numero um double, assim nao complica o textField
+                    //produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = quantidade, casa= , tipo = ))
 
 
                     navController.popBackStack()   // volta para o ecrã anterior, volta para o ecrã anterior, ecra da lista de produtos
@@ -228,6 +231,13 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
                 Text("Adicionar")
             }
         }
+        OutlinedTextField(
+            value = quantidadeProduto,
+            onValueChange = { quantidadeProduto = it },
+            label = { Text("Qual é a quantidade") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -250,7 +260,9 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
 
     //caixa do adicionar produto
     Box(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         Button(
@@ -298,18 +310,20 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
 @Composable
 fun CardView(casa: Home, navController: NavController, viewModel: HomeViewModel) { //cards das casas
     Card(                                 //isto e para criarmos como se fosse uma caixa a volta do texto
-        modifier = Modifier.fillMaxSize() //maximizar o tamanho do preenchimento
+        modifier = Modifier
+            .fillMaxSize() //maximizar o tamanho do preenchimento
             .padding(12.dp)          //criar o espacamento entre eles de 12 dp's(?)
-            .clickable(){
+            .clickable() {
                 navController.navigate("lista_coisas/${casa.id}")  //${casa.id} - tem de se colocar para sabermos exatamente que casa estamos a trabalhar
-                                                                          // e a unica maneira de fazer a comunicação entre ecrãs, por argumentos de rota
+                // e a unica maneira de fazer a comunicação entre ecrãs, por argumentos de rota
             }
     ) {
         Row() {
             Image(
                 painter = painterResource(id = R.drawable.baseline_home_24), //definir a source da imagem
                 contentDescription = "Foto de casa",                         //descricao para quem nao tem acesso a imagem
-                modifier = Modifier.width(50.dp)                             //largura da imagem
+                modifier = Modifier
+                    .width(50.dp)                             //largura da imagem
                     .height(50.dp)                                           //altura da imagem
             )
             Text(
@@ -326,9 +340,10 @@ fun CardProduto(produto: Produto) {
     //personalizar o card de cada produto
 
     Card(                                 //isto e para criarmos como se fosse uma caixa a volta do texto
-        modifier = Modifier.fillMaxSize() //maximizar o tamanho do preenchimento
+        modifier = Modifier
+            .fillMaxSize() //maximizar o tamanho do preenchimento
             .padding(12.dp)          //criar o espacamento entre eles de 12 dp's(?)
-            .clickable(){
+            .clickable() {
 
                 //MAYBE
                 //se carregarmos, abre a descricao do produto e da para alterar com um + e um - a quantidade de produtos
