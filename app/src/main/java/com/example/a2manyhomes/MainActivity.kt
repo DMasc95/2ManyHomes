@@ -276,59 +276,67 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
     val produtos by produtoViewModel.getProdutosPorCasa(idCasa).collectAsState(initial = emptyList())
     val casa by homeViewModel.getHomeporId(idCasa).collectAsState(initial = null)
 
-    //caixa do nome da localizacao em cima
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text=casa?.localizacao ?: "A carregar...", // adiciona-se os ?, porque como casa é Home? (pode ser null), e o Kotlin não te deixa aceder a .localizacao diretamente sem tratar essa possibilidade.
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-        )
-    }
-
-    //caixa do adicionar produto
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        Button(
-            onClick = {
-                //funcao que abre um novo screen de adicionar produto
-                navController.navigate("adicionar_produto/${idCasa}")
-            },
-            modifier = Modifier.padding(16.dp)
+        //caixa do nome da localizacao em cima
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
         ) {
             Text(
-                text = "Adicionar produto"
+                text=casa?.localizacao ?: "A carregar...", // adiciona-se os ?, porque como casa é Home? (pode ser null), e o Kotlin não te deixa aceder a .localizacao diretamente sem tratar essa possibilidade.
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
             )
         }
-    }
 
-    //lista para dar scroll dos produtos
-    LazyColumn {
-        items(produtos) { produto ->
-            CardProduto(produto)
-        }
-    }
-
-    //caixa para ter o botao de recuar
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomStart
-    ) {
-        Button(
-            onClick = {
-                navController.popBackStack()   // volta para o ecrã anterior ("home")
-            },
-            modifier = Modifier.padding(16.dp)
+        //caixa do adicionar produto
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
-            Text(
-                text = "Recuar"
-            )
+            Button(
+                onClick = {
+                    //funcao que abre um novo screen de adicionar produto
+                    navController.navigate("adicionar_produto/${idCasa}")
+                },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Adicionar produto"
+                )
+            }
+        }
+
+        //lista para dar scroll dos produtos
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 100.dp, bottom = 100.dp)
+        ) {
+            items(produtos) { produto ->
+                CardProduto(produto)
+            }
+        }
+
+        //caixa para ter o botao de recuar
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            Button(
+                onClick = {
+                    navController.popBackStack()   // volta para o ecrã anterior ("home")
+                },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Recuar"
+                )
+            }
         }
     }
 }
