@@ -650,91 +650,91 @@ fun CardFiltro(tipoProduto: TipoProduto) {
         Row() {
             //possibilidade de criar aqui um ciclo if:
             //se a descricao do produto for alimento, imagem de alimento, se for outra coisa e outra coisa
-            if(produto.tipo == TipoProduto.MERCEARIA) {
+            if(tipoProduto == TipoProduto.MERCEARIA) {
                 Image(
                     painter = painterResource(id = R.drawable.pasta_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.FRESCOS) {
+            } else if(tipoProduto == TipoProduto.FRESCOS) {
                 Image(
                     painter = painterResource(id = R.drawable.yogurt_and_spoon_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de um iogurte",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.FRUTAS) {
+            } else if(tipoProduto == TipoProduto.FRUTAS) {
                 Image(
                     painter = painterResource(id = R.drawable.apple_6_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de uma maca",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.LEGUMES) {
+            } else if(tipoProduto == TipoProduto.LEGUMES) {
                 Image(
                     painter = painterResource(id = R.drawable.carrot_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de cenoura",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.ENLATADOS) {
+            } else if(tipoProduto == TipoProduto.ENLATADOS) {
                 Image(
                     painter = painterResource(id = R.drawable.sardine_tuna_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.BEBIDAS) {
+            } else if(tipoProduto == TipoProduto.BEBIDAS) {
                 Image(
                     painter = painterResource(id = R.drawable.thin_bottle_of_water_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.UTENSILIO) {
+            } else if(tipoProduto == TipoProduto.UTENSILIO) {
                 Image(
                     painter = painterResource(id = R.drawable.spatula_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.TEMPERO) {
+            } else if(tipoProduto == TipoProduto.TEMPERO) {
                 Image(
                     painter = painterResource(id = R.drawable.salt_and_pepper_salt_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.HIGIENE) {
+            } else if(tipoProduto == TipoProduto.HIGIENE) {
                 Image(
                     painter = painterResource(id = R.drawable.toothbrush_and_paste_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.LIMPEZA) {
+            } else if(tipoProduto == TipoProduto.LIMPEZA) {
                 Image(
                     painter = painterResource(id = R.drawable.cleaning_spray_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.CONGELADO) {
+            } else if(tipoProduto == TipoProduto.CONGELADO) {
                 Image(
                     painter = painterResource(id = R.drawable.frozen_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.LIVROS) {
+            } else if(tipoProduto == TipoProduto.LIVROS) {
                 Image(
                     painter = painterResource(id = R.drawable.books_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
                 )
-            } else if(produto.tipo == TipoProduto.OUTRO) {
+            } else if(tipoProduto == TipoProduto.OUTRO) {
                 Image(
                     painter = painterResource(id = R.drawable.question_mark_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
@@ -743,7 +743,7 @@ fun CardFiltro(tipoProduto: TipoProduto) {
                 )
             }
             Text(
-                "${produto.tipo}",
+                text = "$tipoProduto",
                 modifier = Modifier.padding(12.dp)
             )
         }
