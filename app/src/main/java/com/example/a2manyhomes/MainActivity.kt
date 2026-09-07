@@ -209,36 +209,42 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
     var quantidadeProduto by remember { mutableStateOf("") }
     var tipoSelecionado by remember { mutableStateOf(TipoProduto.OUTRO) }   // valor inicial
 
-
-
-    Column(modifier = Modifier.padding(32.dp)) {
-        //caixa do nome do produto
-        OutlinedTextField(
-            value = nomeProduto,
-            onValueChange = { nomeProduto = it },
-            label = { Text("Nome do Produto") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        //caixa da quantidade
-        OutlinedTextField(
-            value = quantidadeProduto,
-            onValueChange = { quantidadeProduto = it },
-            label = { Text("Qual é a quantidade") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
-        )
-        //dropdown do tipo do produto
-        DropdownTipoProduto(
-            tipoSelecionado = tipoSelecionado,
-            onTipoSelecionado = { tipoSelecionado = it }
-        )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier.padding(32.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            //caixa do nome do produto
+            OutlinedTextField(
+                value = nomeProduto,
+                onValueChange = { nomeProduto = it },
+                label = { Text("Nome do Produto") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            //caixa da quantidade
+            OutlinedTextField(
+                value = quantidadeProduto,
+                onValueChange = { quantidadeProduto = it },
+                label = { Text("Qual é a quantidade") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
+            //dropdown do tipo do produto
+            DropdownTipoProduto(
+                tipoSelecionado = tipoSelecionado,
+                onTipoSelecionado = { tipoSelecionado = it }
+            )
+        }
         //botoes para adicionar
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Button(
