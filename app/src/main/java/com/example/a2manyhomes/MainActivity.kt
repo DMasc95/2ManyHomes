@@ -256,7 +256,7 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
                 }
                 Button(
                     onClick = {
-                        val quantidade = quantidadeProduto.toDoubleOrNull() ?: 0.0 //isto tem de ter para tornar o numero um double, assim nao complica o textField
+                        val quantidade = quantidadeProduto.toIntOrNull() ?: 0 //isto tem de ter para tornar o numero um double, assim nao complica o textField
                         produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = quantidade, casa= idCasa, tipo = tipoSelecionado))
                         //casa e so o id da casa correspondente, portanto Int
 
@@ -274,7 +274,7 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
 @Composable
 fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeViewModel: HomeViewModel, navController: NavController) { //funcao que cria o novo screen
     val produtos by produtoViewModel.getProdutosPorCasa(idCasa).collectAsState(initial = emptyList())
-    val casa by homeViewModel.getHomeporId(idCasa).collectAsState(initial = null)
+    val casa by remember(idCasa) { homeViewModel.getHomeporId(idCasa) }.collectAsState(initial = null)
 
     Box(
         modifier = Modifier.fillMaxSize()

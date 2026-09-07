@@ -22,7 +22,7 @@ data class Produto (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val nome: String,
-    val quantidade: Double,
+    val quantidade: Int,
     val casa: Int, // id da casa onde o alimento está guardado
     val tipo: TipoProduto
 )
