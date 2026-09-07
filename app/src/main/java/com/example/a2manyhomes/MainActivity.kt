@@ -21,6 +21,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -50,6 +55,7 @@ import data.Home
 import data.HomeRepository
 import data.Produto
 import data.ProdutoRepository
+import data.TipoProduto
 import viewmodel.HomeViewModel
 import viewmodel.HomeViewModelFactory
 import viewmodel.ProdutoViewModel
@@ -201,40 +207,19 @@ fun InserirCasaScreen(homeViewModel: HomeViewModel,navController: NavController)
 fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: ProdutoViewModel,idCasa: Int) { //ecra de adicionar um produto novo
     var nomeProduto by remember { mutableStateOf("") }
     var quantidadeProduto by remember { mutableStateOf("") }
+    var tipoSelecionado by remember { mutableStateOf(TipoProduto.OUTRO) }   // valor inicial
 
-    Column(modifier = Modifier.padding(16.dp)) {
+
+
+    Column(modifier = Modifier.padding(32.dp)) {
+        //caixa do nome do produto
         OutlinedTextField(
             value = nomeProduto,
             onValueChange = { nomeProduto = it },
             label = { Text("Nome do Produto") },
             modifier = Modifier.fillMaxWidth()
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    navController.popBackStack()   // volta para o ecrã anterior, ecra da lista de produtos
-                }
-            ) {
-                Text("Cancelar")
-            }
-            Button(
-                onClick = {
-
-                    //ARRANJAR ISTO
-                    //val quantidade = quantidadeProduto.toDoubleOrNull() ?: 0.0 //isto tem de ter para tornar o numero um double, assim nao complica o textField
-                    //produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = quantidade, casa= idCasa, tipo = ))
-                    //casa e so o id da casa correspondente, portanto Int
-
-                    navController.popBackStack()   // volta para o ecrã anterior, volta para o ecrã anterior, ecra da lista de produtos
-                },
-                enabled = nomeProduto.isNotBlank()
-            ) {
-                Text("Adicionar")
-            }
-        }
+        //caixa da quantidade
         OutlinedTextField(
             value = quantidadeProduto,
             onValueChange = { quantidadeProduto = it },
@@ -242,6 +227,41 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
+        //dropdown do tipo do produto
+        DropdownTipoProduto(
+            tipoSelecionado = tipoSelecionado,
+            onTipoSelecionado = { tipoSelecionado = it }
+        )
+        //botoes para adicionar
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Button(
+                    onClick = {
+                        navController.popBackStack()   // volta para o ecrã anterior, ecra da lista de produtos
+                    }
+                ) {
+                    Text("Cancelar")
+                }
+                Button(
+                    onClick = {
+                        val quantidade = quantidadeProduto.toDoubleOrNull() ?: 0.0 //isto tem de ter para tornar o numero um double, assim nao complica o textField
+                        produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = quantidade, casa= idCasa, tipo = tipoSelecionado))
+                        //casa e so o id da casa correspondente, portanto Int
+
+                        navController.popBackStack()   // volta para o ecrã anterior, volta para o ecrã anterior, ecra da lista de produtos
+                    },
+                    enabled = nomeProduto.isNotBlank()
+                ) {
+                    Text("Adicionar")
+                }
+            }
+        }
     }
 }
 
@@ -272,7 +292,7 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
         Button(
             onClick = {
                 //funcao que abre um novo screen de adicionar produto
-                navController.navigate("adicionar_produto")
+                navController.navigate("adicionar_produto/${idCasa}")
             },
             modifier = Modifier.padding(16.dp)
         ) {
@@ -307,6 +327,45 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownTipoProduto(
+    tipoSelecionado: TipoProduto,
+    onTipoSelecionado: (TipoProduto) -> Unit
+    ) {
+
+    var expandido by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expandido,
+        onExpandedChange = { expandido = !expandido }
+    ) {
+        OutlinedTextField(
+            value = tipoSelecionado.name,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Tipo de produto") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandido) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)   // liga o campo ao menu
+        )
+        ExposedDropdownMenu(
+            expanded = expandido,
+            onDismissRequest = { expandido = false }
+        ) {
+            TipoProduto.entries.forEach { tipo ->
+                DropdownMenuItem(
+                    text = { Text(tipo.name) },
+                    onClick = {
+                        onTipoSelecionado(tipo)
+                        expandido = false
+                    }
+                )
+            }
+        }
+    }
+}
 
 
 

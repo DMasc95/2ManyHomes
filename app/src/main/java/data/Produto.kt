@@ -40,5 +40,5 @@ enum class TipoProduto {
     LIMPEZA,
     CONGELADO,
     LIVROS,
-    NENHUM
+    OUTRO
 }
