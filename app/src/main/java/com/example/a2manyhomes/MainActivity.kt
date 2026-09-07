@@ -136,6 +136,9 @@ class MainActivity : ComponentActivity() {
                             val idcasa = backStackEntry.arguments?.getInt("idcasa") ?: 0
                             AdicionarProdutoScreen(navController,produtoviewModel,idcasa)
                         }
+                        composable("filtro"){
+                            FiltroScreen(navController)
+                        }
                     }
                 }
             }
@@ -299,7 +302,7 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
             )
         }
 
-        //caixa do adicionar produto
+        //caixa para colocar o filtro
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -308,13 +311,13 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
         ) {
             Button(
                 onClick = {
-                    //funcao que abre um novo screen de adicionar produto
-                    navController.navigate("adicionar_produto/${idCasa}")
+                    //funcao que abre um novo screen de filtro
+                    navController.navigate("filtro")
                 },
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Adicionar produto"
+                    text = "O que procuras?"
                 )
             }
         }
@@ -330,20 +333,39 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
             }
         }
 
-        //caixa para ter o botao de recuar
+        //caixa para ter o botao de recuar e adicionar produto
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomStart
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Button(
-                onClick = {
-                    navController.popBackStack()   // volta para o ecrã anterior ("home")
-                },
-                modifier = Modifier.padding(16.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "Recuar"
-                )
+                //botao para recuar
+                Button(
+                    onClick = {
+                        navController.popBackStack()   // volta para o ecrã anterior ("home")
+                    },
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Recuar"
+                    )
+                }
+                //botao do adicionar produto
+                Button(
+                    onClick = {
+                        //funcao que abre um novo screen de adicionar produto
+                        navController.navigate("adicionar_produto/${idCasa}")
+                    },
+                    modifier = Modifier.padding(16.dp)
+
+                ) {
+                    Text(
+                        text = "Adicionar produto"
+                    )
+                }
             }
         }
     }
@@ -390,6 +412,63 @@ fun DropdownTipoProduto(
 }
 
 
+
+@Composable
+fun FiltroScreen(navController: NavController) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        //caixa do texto Filtro em cima
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Text(
+                text = "O que procuras?",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    }
+
+    //adicionar filtros
+
+    //caixa para ter o botao de recuar e aplicar filtros
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            //botao para recuar
+            Button(
+                onClick = {
+                    navController.popBackStack()   // volta para o ecrã anterior, a lista de produtos
+                },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Recuar"
+                )
+            }
+            //botao do adicionar produto
+            Button(
+                onClick = {
+                    //funcao que aplica os filtros no screen da lista de produtos
+                    //navController.navigate("adicionar_produto/${idCasa}")
+                },
+                modifier = Modifier.padding(16.dp)
+
+            ) {
+                Text(
+                    text = "Aplicar filtros"
+                )
+            }
+        }
+    }
+}
 
 
 @Composable
@@ -477,7 +556,7 @@ fun CardProduto(produto: Produto) {
                 )
             } else if(produto.tipo == TipoProduto.BEBIDAS) {
                 Image(
-                    painter = painterResource(id = R.drawable.bottle_of_water_svgrepo_com), //definir a source da imagem
+                    painter = painterResource(id = R.drawable.thin_bottle_of_water_svgrepo_com), //definir a source da imagem
                     contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
                     modifier = Modifier.width(50.dp)                             //largura da imagem
                         .height(50.dp)                                           //altura da imagem
@@ -547,7 +626,6 @@ fun CardProduto(produto: Produto) {
 //TO DO
 
 //personalizar o cartao para colocar o + e o - para aumentar ou diminuir a quantidade de um produto
-//se a descricao do produto for alimento, imagem de alimento, se for outra coisa e outra coisa
 //possibilidade de filtro
 //barra de procura?
 
