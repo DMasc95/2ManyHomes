@@ -391,6 +391,10 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
 @Composable
 fun ProdutosFiltradosScreen(navController: NavController, idcasa: Int, tipoProduto: TipoProduto) {
 
+    //o titulo pode ser algo como "Produto filtrado - Oeiras"
+    //basicamente "produto selecionado - casa selecionada", e depois aparece a lista toda de produtos
+
+
 }
 
 
@@ -776,12 +780,12 @@ fun CardFiltro(tipoProduto: TipoProduto, navController: NavController, idCasa: I
 
 //TO DO
 
-//falta completar os produtos_filtrados, nao sei como obter duas coisas em simultaneo
-
+//fazer a pagina dos produtos filtrados
+//o titulo pode ser algo como "Produto filtrado - Oeiras"
 //personalizar o cartao para colocar o + e o - para aumentar ou diminuir a quantidade de um produto
-//possibilidade de filtro
-//barra de procura?
 
+
+//barra de procura?
 
 
 //adicionar algo para eliminar a casa caso queira
