@@ -123,8 +123,12 @@ class MainActivity : ComponentActivity() {
                         composable("inserir_casa") {
                             InserirCasaScreen(homeViewModel,navController)
                         }
-                        composable("adicionar_produto") {
-                            AdicionarProdutoScreen(navController,produtoviewModel)
+                        composable(
+                                route ="adicionar_produto/{idcasa}",
+                                arguments = listOf(navArgument("idcasa") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val idcasa = backStackEntry.arguments?.getInt("idcasa") ?: 0
+                            AdicionarProdutoScreen(navController,produtoviewModel,idcasa)
                         }
                     }
                 }
@@ -194,7 +198,7 @@ fun InserirCasaScreen(homeViewModel: HomeViewModel,navController: NavController)
 }
 
 @Composable
-fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: ProdutoViewModel) { //ecra de adicionar um produto novo
+fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: ProdutoViewModel,idCasa: Int) { //ecra de adicionar um produto novo
     var nomeProduto by remember { mutableStateOf("") }
     var quantidadeProduto by remember { mutableStateOf("") }
 
@@ -221,8 +225,8 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
 
                     //ARRANJAR ISTO
                     //val quantidade = quantidadeProduto.toDoubleOrNull() ?: 0.0 //isto tem de ter para tornar o numero um double, assim nao complica o textField
-                    //produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = quantidade, casa= , tipo = ))
-
+                    //produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = quantidade, casa= idCasa, tipo = ))
+                    //casa e so o id da casa correspondente, portanto Int
 
                     navController.popBackStack()   // volta para o ecrã anterior, volta para o ecrã anterior, ecra da lista de produtos
                 },
