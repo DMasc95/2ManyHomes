@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -598,7 +599,7 @@ fun CardProduto(produto: Produto, produtoViewModel: ProdutoViewModel) {
             }
             .animateContentSize()
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(8.dp)) {
             Row() {
                 //possibilidade de criar aqui um ciclo if:
                 //se a descricao do produto for alimento, imagem de alimento, se for outra coisa e outra coisa
@@ -698,34 +699,47 @@ fun CardProduto(produto: Produto, produtoViewModel: ProdutoViewModel) {
                     "${produto.nome} — ${produto.quantidade}",
                     modifier = Modifier.padding(12.dp)
                 )
-                if (expandido) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+            }
+            var quantidadePreparada by remember(produto.id) {
+                mutableIntStateOf(produto.quantidade)
+            }
+            if (expandido) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = {
+                        if (quantidadePreparada > 0) {
+                            quantidadePreparada--
+                        }
+                    }) {
+                        Text("-", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    Text(
+                        text = "$quantidadePreparada",
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    IconButton(onClick = {
+                        quantidadePreparada++
+                    }) {
+                        Text("+", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    Button(
+                        onClick = {
+                            produtoViewModel.atualizar(produto.copy(quantidade = quantidadePreparada))
+                        },
+                        modifier = Modifier.padding(16.dp)
                     ) {
-                        IconButton(onClick = {
-                            produtoViewModel.atualizar(produto.copy(quantidade = produto.quantidade - 1))
-                        }) {
-                            Text("-", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        }
-
-                        Text(
-                            text = "${produto.quantidade}",
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-
-                        IconButton(onClick = {
-                            produtoViewModel.atualizar(produto.copy(quantidade = produto.quantidade + 1))
-                        }) {
-                            Text("+", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        }
+                        Text("Atualizar")
                     }
                 }
             }
         }
-
     }
 }
 
@@ -847,8 +861,6 @@ fun CardFiltro(tipoProduto: TipoProduto, navController: NavController, idCasa: I
 
 //TO DO
 
-
-//personalizar o cartao para, ao carregar, colocar o + e o - para aumentar ou diminuir a quantidade de um produto
 //lista de compras
 //colocar a lista por ordem alfabetica? se calhar e mais facil
 
