@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -343,13 +344,39 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
         }
 
         //lista para dar scroll dos produtos
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 100.dp, bottom = 100.dp)
+
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomEnd,
         ) {
-            items(produtos) { produto ->
-                CardProduto(produto,produtoViewModel)
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 100.dp, bottom = 100.dp)
+            ) {
+                items(produtos) { produto ->
+                    CardProduto(produto,produtoViewModel)
+                }
+            }
+            Button(
+                onClick = {
+
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        end = 16.dp,
+                        bottom = 90.dp
+                    )
+                    .size(65.dp),
+                shape = CircleShape
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.shopping_basket_svgrepo_com),       //definir a source da imagem
+                    contentDescription = "Foto de uma lista das compras",                         //descricao para quem nao tem acesso a imagem
+                    modifier = Modifier.size(800.dp)                                      //altura da imagem
+                )
             }
         }
 
@@ -734,6 +761,7 @@ fun CardProduto(produto: Produto, produtoViewModel: ProdutoViewModel) {
                             produtoViewModel.atualizar(produto.copy(quantidade = quantidadePreparada))
                         },
                         modifier = Modifier.padding(16.dp)
+
                     ) {
                         Text("Atualizar")
                     }
