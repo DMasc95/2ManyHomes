@@ -278,6 +278,7 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
                 onTipoSelecionado = { tipoSelecionado = it }
             )
             //escolha para se e para a lista de compras ou nao
+            Text("Pretende adicionar à lista de compras?")
             SingleChoiceSegmentedButtonRow {
                 SegmentedButton(
                     selected = resposta,
@@ -286,7 +287,6 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
                 ) {
                     Text("Sim")
                 }
-
                 SegmentedButton(
                     selected = !resposta,
                     onClick = { resposta = false },
@@ -316,7 +316,13 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
                 Button(
                     onClick = {
                         val quantidade = quantidadeProduto.toIntOrNull() ?: 0 //isto tem de ter para tornar o numero um double, assim nao complica o textField
-                        produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = quantidade, casa= idCasa, tipo = tipoSelecionado))
+                        if(resposta==true){
+                            produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = 0, casa= idCasa, tipo = tipoSelecionado))
+                        } else {
+                            produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = quantidade, casa= idCasa, tipo = tipoSelecionado))
+                        }
+
+
                         //casa e so o id da casa correspondente, portanto Int
 
                         navController.popBackStack()   // volta para o ecrã anterior, ecra da lista de produtos
@@ -375,8 +381,6 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
         }
 
         //lista para dar scroll dos produtos
-
-
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomEnd,
@@ -387,7 +391,9 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
                     .padding(top = 100.dp, bottom = 100.dp)
             ) {
                 items(produtos) { produto ->
-                    CardProduto(produto,produtoViewModel)
+                    if(produto.quantidade > 0) {
+                        CardProduto(produto,produtoViewModel)
+                    }
                 }
             }
             IconButton(
@@ -848,10 +854,6 @@ fun CardProduto(produto: Produto, produtoViewModel: ProdutoViewModel) {
 @Composable
 fun CardProdutoListaCompras(produto: Produto, produtoViewModel: ProdutoViewModel) {
     var expandido by remember { mutableStateOf(false) }
-    var quantidadeDesejada by remember(produto.id) {
-        mutableIntStateOf(produto.quantidade)
-    }
-
     val quantidadesCompra by produtoViewModel.quantidadesCompra.collectAsState()
     val quantidadeAtual = quantidadesCompra[produto.id] ?: produto.quantidade
     Card(                                 //isto e para criarmos como se fosse uma caixa a volta do texto
