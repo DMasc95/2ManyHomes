@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,10 +30,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -44,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -238,6 +244,7 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
     var nomeProduto by remember { mutableStateOf("") }
     var quantidadeProduto by remember { mutableStateOf("") }
     var tipoSelecionado by remember { mutableStateOf(TipoProduto.OUTRO) }   // valor inicial
+    var resposta by remember { mutableStateOf(true) } //para a caixa de escola
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -270,6 +277,24 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
                 tipoSelecionado = tipoSelecionado,
                 onTipoSelecionado = { tipoSelecionado = it }
             )
+            //escolha para se e para a lista de compras ou nao
+            SingleChoiceSegmentedButtonRow {
+                SegmentedButton(
+                    selected = resposta,
+                    onClick = { resposta = true },
+                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
+                ) {
+                    Text("Sim")
+                }
+
+                SegmentedButton(
+                    selected = !resposta,
+                    onClick = { resposta = false },
+                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)
+                ) {
+                    Text("Não")
+                }
+            }
         }
         //botoes para adicionar
         Box(
@@ -294,7 +319,7 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
                         produtoViewModel.inserir(Produto(nome=nomeProduto, quantidade = quantidade, casa= idCasa, tipo = tipoSelecionado))
                         //casa e so o id da casa correspondente, portanto Int
 
-                        navController.popBackStack()   // volta para o ecrã anterior, volta para o ecrã anterior, ecra da lista de produtos
+                        navController.popBackStack()   // volta para o ecrã anterior, ecra da lista de produtos
                     },
                     enabled = nomeProduto.isNotBlank()
                 ) {
@@ -365,7 +390,7 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
                     CardProduto(produto,produtoViewModel)
                 }
             }
-            Button(
+            IconButton(
                 onClick = {
                     mostrarSheet = true
                 },
@@ -375,13 +400,14 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
                         end = 16.dp,
                         bottom = 90.dp
                     )
-                    .size(65.dp),
-                shape = CircleShape
+                    .size(60.dp)
+                    .background(color = Color(0xFF4E5E8B), shape = CircleShape)
             ) {
-                Image(
+                Icon(
                     painter = painterResource(id = R.drawable.shopping_basket_svgrepo_com),       //definir a source da imagem
                     contentDescription = "Foto de uma lista das compras",                         //descricao para quem nao tem acesso a imagem
-                    modifier = Modifier.size(800.dp)                                      //altura da imagem
+                    modifier = Modifier.size(35.dp),                                      //altura da imagem
+                    tint = Color.White
                 )
             }
         }
@@ -391,6 +417,33 @@ fun ListaProdutosScreen(idCasa: Int, produtoViewModel: ProdutoViewModel, homeVie
                 onDismissRequest = { mostrarSheet = false },
                 sheetState = sheetState
             ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.TopCenter,
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Button(
+                            onClick = {
+                                produtoViewModel.confirmarECompras(produtos)
+                                mostrarSheet = false
+                            }
+                        ) {
+                            Text("Compras feitas")
+
+                        }
+                        Button(
+                            onClick = {
+                                navController.navigate("adicionar_produto/${idCasa}")
+                            }
+                        ) {
+                            Text("Adicionar Produto")
+                        }
+                    }
+                }
+
                 LazyColumn(modifier = Modifier.padding(16.dp)) {
                     //aqui colocar a lista das compras, com o produto desejado e a quantidade
                     items(produtos) { produto->
@@ -507,10 +560,7 @@ fun ProdutosFiltradosScreen(navController: NavController, idcasa: Int, tipoProdu
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownTipoProduto(
-    tipoSelecionado: TipoProduto,
-    onTipoSelecionado: (TipoProduto) -> Unit
-    ) {
+fun DropdownTipoProduto(tipoSelecionado: TipoProduto, onTipoSelecionado: (TipoProduto) -> Unit) {
 
     var expandido by remember { mutableStateOf(false) }
 
@@ -544,7 +594,6 @@ fun DropdownTipoProduto(
         }
     }
 }
-
 
 
 @Composable
@@ -802,6 +851,9 @@ fun CardProdutoListaCompras(produto: Produto, produtoViewModel: ProdutoViewModel
     var quantidadeDesejada by remember(produto.id) {
         mutableIntStateOf(produto.quantidade)
     }
+
+    val quantidadesCompra by produtoViewModel.quantidadesCompra.collectAsState()
+    val quantidadeAtual = quantidadesCompra[produto.id] ?: produto.quantidade
     Card(                                 //isto e para criarmos como se fosse uma caixa a volta do texto
         modifier = Modifier
             .fillMaxSize() //maximizar o tamanho do preenchimento
@@ -812,107 +864,124 @@ fun CardProdutoListaCompras(produto: Produto, produtoViewModel: ProdutoViewModel
             .animateContentSize()
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Row() {
-                //possibilidade de criar aqui um ciclo if:
-                //se a descricao do produto for alimento, imagem de alimento, se for outra coisa e outra coisa
-                if(produto.tipo == TipoProduto.MERCEARIA) {
-                    Image(
-                        painter = painterResource(id = R.drawable.pasta_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.FRESCOS) {
-                    Image(
-                        painter = painterResource(id = R.drawable.yogurt_and_spoon_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de um iogurte",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.FRUTAS) {
-                    Image(
-                        painter = painterResource(id = R.drawable.apple_6_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de uma maca",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.LEGUMES) {
-                    Image(
-                        painter = painterResource(id = R.drawable.carrot_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de cenoura",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.ENLATADOS) {
-                    Image(
-                        painter = painterResource(id = R.drawable.sardine_tuna_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.BEBIDAS) {
-                    Image(
-                        painter = painterResource(id = R.drawable.thin_bottle_of_water_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.UTENSILIO) {
-                    Image(
-                        painter = painterResource(id = R.drawable.spatula_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.TEMPERO) {
-                    Image(
-                        painter = painterResource(id = R.drawable.salt_and_pepper_salt_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.HIGIENE) {
-                    Image(
-                        painter = painterResource(id = R.drawable.toothbrush_and_paste_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.LIMPEZA) {
-                    Image(
-                        painter = painterResource(id = R.drawable.cleaning_spray_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.CONGELADO) {
-                    Image(
-                        painter = painterResource(id = R.drawable.frozen_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.LIVROS) {
-                    Image(
-                        painter = painterResource(id = R.drawable.books_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
-                    )
-                } else if(produto.tipo == TipoProduto.OUTRO) {
-                    Image(
-                        painter = painterResource(id = R.drawable.question_mark_svgrepo_com), //definir a source da imagem
-                        contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
-                        modifier = Modifier.width(50.dp)                             //largura da imagem
-                            .height(50.dp)                                           //altura da imagem
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    if(produto.tipo == TipoProduto.MERCEARIA) {
+                        Image(
+                            painter = painterResource(id = R.drawable.pasta_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.FRESCOS) {
+                        Image(
+                            painter = painterResource(id = R.drawable.yogurt_and_spoon_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de um iogurte",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.FRUTAS) {
+                        Image(
+                            painter = painterResource(id = R.drawable.apple_6_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de uma maca",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.LEGUMES) {
+                        Image(
+                            painter = painterResource(id = R.drawable.carrot_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de cenoura",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.ENLATADOS) {
+                        Image(
+                            painter = painterResource(id = R.drawable.sardine_tuna_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.BEBIDAS) {
+                        Image(
+                            painter = painterResource(id = R.drawable.thin_bottle_of_water_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.UTENSILIO) {
+                        Image(
+                            painter = painterResource(id = R.drawable.spatula_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.TEMPERO) {
+                        Image(
+                            painter = painterResource(id = R.drawable.salt_and_pepper_salt_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.HIGIENE) {
+                        Image(
+                            painter = painterResource(id = R.drawable.toothbrush_and_paste_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.LIMPEZA) {
+                        Image(
+                            painter = painterResource(id = R.drawable.cleaning_spray_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.CONGELADO) {
+                        Image(
+                            painter = painterResource(id = R.drawable.frozen_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.LIVROS) {
+                        Image(
+                            painter = painterResource(id = R.drawable.books_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    } else if(produto.tipo == TipoProduto.OUTRO) {
+                        Image(
+                            painter = painterResource(id = R.drawable.question_mark_svgrepo_com), //definir a source da imagem
+                            contentDescription = "Foto de massa",                         //descricao para quem nao tem acesso a imagem
+                            modifier = Modifier.width(50.dp)                             //largura da imagem
+                                .height(50.dp)                                           //altura da imagem
+                        )
+                    }
+                    Text(
+                        "${produto.nome} — $quantidadeAtual",
+                        modifier = Modifier.padding(12.dp)
                     )
                 }
-                Text(
-                    "${produto.nome} — $quantidadeDesejada",
-                    modifier = Modifier.padding(12.dp)
-                )
+                IconButton( //este ja nao traz o padding interior que os outros trazem
+                    onClick = {
+                        produtoViewModel.confirmarECompras(listOf(produto))
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.correct_right_arrow_direction_left_down_up_svgrepo_com), //definir a source da imagem
+                        contentDescription = "Foto de um certo",                         //descricao para quem nao tem acesso a imagem
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
-
             if (expandido) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -920,21 +989,21 @@ fun CardProdutoListaCompras(produto: Produto, produtoViewModel: ProdutoViewModel
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = {
-                        if (quantidadeDesejada > 0) {
-                            quantidadeDesejada--
+                        if (quantidadeAtual > 0) {
+                            produtoViewModel.definirQuantidadeCompra(produto.id, quantidadeAtual - 1)
                         }
                     }) {
                         Text("-", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     }
 
                     Text(
-                        text = "$quantidadeDesejada",
+                        text = "$quantidadeAtual",
                         fontSize = 20.sp,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
 
                     IconButton(onClick = {
-                        quantidadeDesejada++
+                        produtoViewModel.definirQuantidadeCompra(produto.id, quantidadeAtual + 1)
                     }) {
                         Text("+", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     }
@@ -1062,7 +1131,7 @@ fun CardFiltro(tipoProduto: TipoProduto, navController: NavController, idCasa: I
 
 //TO DO
 
-//lista de compras
+//adicionar produto na lista das compras
 //colocar a lista por ordem alfabetica? se calhar e mais facil
 
 

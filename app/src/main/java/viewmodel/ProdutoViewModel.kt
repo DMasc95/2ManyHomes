@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import data.Produto
 import data.ProdutoRepository
 import data.TipoProduto
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -38,6 +39,27 @@ class ProdutoViewModel(private val repository: ProdutoRepository) : ViewModel() 
     fun getProdutosPorCasaETipo(casa: Int, tipo: TipoProduto): StateFlow<List<Produto>> =
         repository.getProdutosPorCasaETipo(casa,tipo)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _quantidadesCompra = MutableStateFlow<Map<Int, Int>>(emptyMap())
+    val quantidadesCompra: StateFlow<Map<Int, Int>> = _quantidadesCompra
+
+    fun definirQuantidadeCompra(produtoId: Int, quantidade: Int) {
+        _quantidadesCompra.value = _quantidadesCompra.value.toMutableMap().apply {
+            this[produtoId] = quantidade
+        }
+    }
+
+    fun confirmarECompras(produtos: List<Produto>) {
+        viewModelScope.launch {
+            produtos.forEach { produto ->
+                val novaQuantidade = _quantidadesCompra.value[produto.id]
+                if (novaQuantidade != null) {
+                    repository.atualizar(produto.copy(quantidade = novaQuantidade))
+                    _quantidadesCompra.value = _quantidadesCompra.value - produto.id
+                }
+            }
+        }
+    }
 }
 
 class ProdutoViewModelFactory(private val repository: ProdutoRepository) : ViewModelProvider.Factory {
