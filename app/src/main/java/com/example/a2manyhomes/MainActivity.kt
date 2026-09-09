@@ -1137,11 +1137,10 @@ fun CardFiltro(tipoProduto: TipoProduto, navController: NavController, idCasa: I
 
 //TO DO
 
-//colocar a lista por ordem alfabetica? se calhar e mais facil
+//criar maneira de outras pessoas ligarem a mesma aplicacao.
+
+
+
 //criar uma funcao que nao deixe adicionar coisas parecidas, se calhar
-
-
 //barra de procura?
-
-
 //adicionar algo para eliminar a casa caso queira
