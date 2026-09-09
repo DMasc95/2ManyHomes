@@ -244,7 +244,7 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
     var nomeProduto by remember { mutableStateOf("") }
     var quantidadeProduto by remember { mutableStateOf("") }
     var tipoSelecionado by remember { mutableStateOf(TipoProduto.OUTRO) }   // valor inicial
-    var resposta by remember { mutableStateOf(true) } //para a caixa de escola
+    var resposta by remember { mutableStateOf(false) } //para a caixa de escolha
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -269,6 +269,7 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
                 value = quantidadeProduto,
                 onValueChange = { quantidadeProduto = it },
                 label = { Text("Qual é a quantidade") },
+                enabled = !resposta,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -1133,12 +1134,13 @@ fun CardFiltro(tipoProduto: TipoProduto, navController: NavController, idCasa: I
 
 //TO DO
 
-//adicionar produto na lista das compras
+// se estiver seleciionado que e para a lista das compras, nao deixar colocar quantidade
+//adicionar a quantidade diretamente na lista das compras?????? maybe
 //colocar a lista por ordem alfabetica? se calhar e mais facil
+//criar uma funcao que nao deixe adicionar coisas parecidas, se calhar
 
 
 //barra de procura?
-
 
 
 //adicionar algo para eliminar a casa caso queira
