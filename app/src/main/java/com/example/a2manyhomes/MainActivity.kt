@@ -283,7 +283,10 @@ fun AdicionarProdutoScreen(navController: NavController,produtoViewModel: Produt
             SingleChoiceSegmentedButtonRow {
                 SegmentedButton(
                     selected = resposta,
-                    onClick = { resposta = true },
+                    onClick = {
+                        resposta = true
+                        quantidadeProduto = ""
+                    },
                     shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
                 ) {
                     Text("Sim")
@@ -856,7 +859,7 @@ fun CardProduto(produto: Produto, produtoViewModel: ProdutoViewModel) {
 fun CardProdutoListaCompras(produto: Produto, produtoViewModel: ProdutoViewModel) {
     var expandido by remember { mutableStateOf(false) }
     val quantidadesCompra by produtoViewModel.quantidadesCompra.collectAsState()
-    val quantidadeAtual = quantidadesCompra[produto.id] ?: produto.quantidade
+    val quantidadeAtual = quantidadesCompra[produto.id] ?: (if (produto.quantidade == 0) 1 else produto.quantidade)
     Card(                                 //isto e para criarmos como se fosse uma caixa a volta do texto
         modifier = Modifier
             .fillMaxSize() //maximizar o tamanho do preenchimento
@@ -1134,8 +1137,6 @@ fun CardFiltro(tipoProduto: TipoProduto, navController: NavController, idCasa: I
 
 //TO DO
 
-// se estiver seleciionado que e para a lista das compras, nao deixar colocar quantidade
-//adicionar a quantidade diretamente na lista das compras?????? maybe
 //colocar a lista por ordem alfabetica? se calhar e mais facil
 //criar uma funcao que nao deixe adicionar coisas parecidas, se calhar
 
