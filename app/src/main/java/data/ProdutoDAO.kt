@@ -18,12 +18,12 @@ interface ProdutoDAO {
     @Delete
     suspend fun apagar(produto: Produto)
 
-    @Query("SELECT * FROM produtos WHERE casa = :casa")
+    @Query("SELECT * FROM produtos WHERE casa = :casa ORDER BY nome ASC")
     fun getProdutosPorCasa(casa: Int): Flow<List<Produto>>
 
     @Query("SELECT * FROM produtos")
     fun getTodos(): Flow<List<Produto>>
 
-    @Query("SELECT * FROM produtos WHERE casa = :casa AND tipo = :tipo")
+    @Query("SELECT * FROM produtos WHERE casa = :casa AND tipo = :tipo ORDER BY nome ASC")
     fun getProdutosPorCasaETipo(casa: Int, tipo: TipoProduto): Flow<List<Produto>>
 }

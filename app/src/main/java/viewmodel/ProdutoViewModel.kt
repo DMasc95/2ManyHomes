@@ -53,10 +53,10 @@ class ProdutoViewModel(private val repository: ProdutoRepository) : ViewModel() 
         viewModelScope.launch {
             produtos.forEach { produto ->
                 val novaQuantidade = _quantidadesCompra.value[produto.id]
-                if (novaQuantidade != null) {
-                    repository.atualizar(produto.copy(quantidade = novaQuantidade))
-                    _quantidadesCompra.value = _quantidadesCompra.value - produto.id
-                }
+                    ?: if (produto.quantidade == 0) 1 else produto.quantidade
+
+                repository.atualizar(produto.copy(quantidade = novaQuantidade))
+                _quantidadesCompra.value = _quantidadesCompra.value - produto.id
             }
         }
     }
